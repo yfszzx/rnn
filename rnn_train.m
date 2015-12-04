@@ -25,7 +25,10 @@ while 1
     end;
     if mod(i,set.show_img_freq)==set.show_img_freq-1
          figure(1);
-         plot(rnn.record.max_valid.Y(:),rnn.record.max_valid.T(:),'.r');
+         py = data.Y(rnn.train,:,(data.pre_len+1):end);
+         pt = data.T(rnn.train,:,(data.pre_len+1):end);
+          plot(py(:),pt(:),'.b');
+         %plot(rnn.record.max_valid.Y(:),rnn.record.max_valid.T(:),'.r');
          figure(2);
          plot(valid.Y(:),valid.T(:),'.r');
     end;

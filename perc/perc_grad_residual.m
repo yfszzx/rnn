@@ -5,7 +5,7 @@ switch perc.f
 	case 2 % sigm
 		residual_in =  residual_in .* output .* (1 -   output);   
 	case 3 % 2tanh
-		residual_in =  2 * residual_in .* (1 - output .*  output) ;
+		residual_in =  2 * residual_in .* (1 - output .*  output/4) ;
 end
 input = [input,ones(size(input,1),1)];
 grads = input' * residual_in / length(input);

@@ -19,37 +19,53 @@ rnn.output_num = size(T, 2);
 rnn.nodes = set.nodes;
 rnn.folds_num = set.folds_num;
 rnn.type = set.type;
+
 tmp = rnn;
 rnn.body = {};
 
 for i = 1:set.folds_num   
     t = tmp;
     t.percO.f = 0;
+    if rnn.type == 2
+    t.percO.W = (rand(rnn.nodes*2 +  1, rnn.output_num) * 2 -1)/1000;
+    t.grads.out = zeros(rnn.nodes*2 + 1, rnn.output_num);  
+    t.delay = set.delay;
+    else
     t.percO.W = (rand(rnn.nodes + 1, rnn.output_num) * 2 -1)/1000;
     t.grads.out = zeros(rnn.nodes + 1, rnn.output_num);  
+    end;
     switch rnn.type
+        case 0
+            t.percI.f = 1;
+            t.percI.W = (rand(rnn.input_num + rnn.nodes + 1, rnn.nodes) * 2 -1)/1000;
+            t.grads.in = zeros(rnn.input_num + rnn.nodes + 1, rnn.nodes); 
         case 1
             t.peephole = set.peephole;
-            t.cell.g.W = (rand(rnn.input_num + rnn.nodes +1, rnn.nodes) * 2 -1)/1000;
+            t.cell.g.W = (rand(rnn.input_num + rnn.nodes +1, rnn.nodes) * 2 -1)/10;
             t.grads.g = zeros(rnn.input_num + rnn.nodes +1, rnn.nodes);
-            t.cell.g.f = 1; %2tanh
+            t.cell.g.f = 3; %2tanh
             ipt_num  = rnn.input_num + rnn.nodes + 1;
             if set.peephole
                 ipt_num  = ipt_num + rnn.nodes;
             end
-            t.cell.i.W = (rand(ipt_num, rnn.nodes) * 2 -1)/1000;
+            t.cell.i.W = (rand(ipt_num, rnn.nodes) * 2 -1)/10;
             t.grads.i = zeros(ipt_num, rnn.nodes);
             t.cell.i.f = 2;
-            t.cell.f.W = (rand(ipt_num, rnn.nodes) * 2 -1)/1000;
+            t.cell.f.W = (rand(ipt_num, rnn.nodes) * 2 -1)/10;
             t.grads.f = zeros(ipt_num, rnn.nodes);
             t.cell.f.f = 2;
-            t.cell.o.W = (rand(ipt_num, rnn.nodes) * 2 -1)/1000;
+            t.cell.o.W = (rand(ipt_num, rnn.nodes) * 2 -1)/10;
             t.grads.o = zeros(ipt_num, rnn.nodes);
             t.cell.o.f = 2;
-        case 0
+        case 2
             t.percI.f = 1;
             t.percI.W = (rand(rnn.input_num + rnn.nodes + 1, rnn.nodes) * 2 -1)/1000;
-            t.grads.in = zeros(rnn.input_num + rnn.nodes + 1, rnn.nodes);  
+            t.grads.in = zeros(rnn.input_num + rnn.nodes + 1, rnn.nodes); 
+%             t.percI.f = 1;
+%             t.percI.W = rand(rnn.input_num + rnn.nodes + 1, rnn.nodes) * 2 -1;
+%             w = rand( rnn.nodes , rnn.nodes);
+%             w = w<set.esn_scl;
+%             t.percI.W(1:rnn.nodes,:) = t.percI.W(1:rnn.nodes,:).* w; 
     end;
     t.test = zeros(set.groups,1);  
     for j=1:set.groups

@@ -13,6 +13,19 @@ switch rnn.type
          data =  lstm_cell( rnn, data, i);
          data.Y(:,:,i) = perc_run(rnn.percO,  data.stats(:, :, i));  
        end;
+    case 2
+        stats = zeros(data.groups, rnn.nodes);
+        for i = 1:data.train_len 
+            input = [stats , data.X(:,:,i)];
+            stats = perc_run(rnn.percI, input); 
+            data.stats(:, :, i) =  stats;
+            if i<rnn.delay + 1
+                input = [stats,zeros(data.groups, rnn.nodes)];
+            else
+                input = [stats,data.stats(:,:,i-rnn.delay)];
+            end
+            data.Y(:,:,i) = perc_run(rnn.percO, input);  
+        end;
 end;
 
 
